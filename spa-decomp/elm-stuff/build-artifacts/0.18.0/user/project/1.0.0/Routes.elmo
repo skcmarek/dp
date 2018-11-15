@@ -1,0 +1,80 @@
+var _user$project$Routes$path = function (route) {
+	var _p0 = route;
+	switch (_p0.ctor) {
+		case 'IndexRoute':
+			return '#books';
+		case 'BookDetailRoute':
+			return A2(_elm_lang$core$Basics_ops['++'], '#books/', _p0._0);
+		case 'AddBookRoute':
+			return '#addBook';
+		case 'LoginRoute':
+			return '#login';
+		case 'SignUpRoute':
+			return '#signup';
+		default:
+			return '';
+	}
+};
+var _user$project$Routes$ErrRoute = {ctor: 'ErrRoute'};
+var _user$project$Routes$SignUpRoute = {ctor: 'SignUpRoute'};
+var _user$project$Routes$LoginRoute = {ctor: 'LoginRoute'};
+var _user$project$Routes$AddBookRoute = {ctor: 'AddBookRoute'};
+var _user$project$Routes$BookDetailRoute = function (a) {
+	return {ctor: 'BookDetailRoute', _0: a};
+};
+var _user$project$Routes$IndexRoute = {ctor: 'IndexRoute'};
+var _user$project$Routes$routingMatch = _evancz$url_parser$UrlParser$oneOf(
+	{
+		ctor: '::',
+		_0: A2(_evancz$url_parser$UrlParser$map, _user$project$Routes$IndexRoute, _evancz$url_parser$UrlParser$top),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_evancz$url_parser$UrlParser$map,
+				_user$project$Routes$IndexRoute,
+				_evancz$url_parser$UrlParser$s('books')),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_evancz$url_parser$UrlParser$map,
+					_user$project$Routes$BookDetailRoute,
+					A2(
+						_evancz$url_parser$UrlParser_ops['</>'],
+						_evancz$url_parser$UrlParser$s('books'),
+						_evancz$url_parser$UrlParser$string)),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_evancz$url_parser$UrlParser$map,
+						_user$project$Routes$AddBookRoute,
+						_evancz$url_parser$UrlParser$s('addBook')),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_evancz$url_parser$UrlParser$map,
+							_user$project$Routes$LoginRoute,
+							_evancz$url_parser$UrlParser$s('login')),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_evancz$url_parser$UrlParser$map,
+								_user$project$Routes$SignUpRoute,
+								_evancz$url_parser$UrlParser$s('signup')),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		}
+	});
+var _user$project$Routes$getLoc = function (location) {
+	var _p1 = A2(_evancz$url_parser$UrlParser$parseHash, _user$project$Routes$routingMatch, location);
+	if (_p1.ctor === 'Just') {
+		return _p1._0;
+	} else {
+		return A2(
+			_elm_lang$core$Debug$log,
+			_elm_lang$core$Basics$toString(location),
+			_user$project$Routes$ErrRoute);
+	}
+};

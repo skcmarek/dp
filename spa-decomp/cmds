@@ -1,0 +1,11 @@
+elm-live src/Main.elm --open -- --output=elm.js
+
+-- 18
+npm install -g elm@0.18.0 elm-test elm-css elm-live@2.6.1 elm-format@exp
+
+-- package
+
+elm-package install gampleman/elm-visualization 1.6.1
+
+-- vizualizer 
+elm-package install elm-community/graph --yes

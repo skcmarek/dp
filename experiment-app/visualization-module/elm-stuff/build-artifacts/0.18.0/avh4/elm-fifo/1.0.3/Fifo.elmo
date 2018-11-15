@@ -1,0 +1,53 @@
+var _avh4$elm_fifo$Fifo$toList = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_p1._0,
+		_elm_lang$core$List$reverse(_p1._1));
+};
+var _avh4$elm_fifo$Fifo$Fifo = F2(
+	function (a, b) {
+		return {ctor: 'Fifo', _0: a, _1: b};
+	});
+var _avh4$elm_fifo$Fifo$empty = A2(
+	_avh4$elm_fifo$Fifo$Fifo,
+	{ctor: '[]'},
+	{ctor: '[]'});
+var _avh4$elm_fifo$Fifo$insert = F2(
+	function (a, _p2) {
+		var _p3 = _p2;
+		return A2(
+			_avh4$elm_fifo$Fifo$Fifo,
+			_p3._0,
+			{ctor: '::', _0: a, _1: _p3._1});
+	});
+var _avh4$elm_fifo$Fifo$remove = function (fifo) {
+	remove:
+	while (true) {
+		var _p4 = fifo;
+		if (_p4._0.ctor === '[]') {
+			if (_p4._1.ctor === '[]') {
+				return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _avh4$elm_fifo$Fifo$empty};
+			} else {
+				var _v3 = A2(
+					_avh4$elm_fifo$Fifo$Fifo,
+					_elm_lang$core$List$reverse(_p4._1),
+					{ctor: '[]'});
+				fifo = _v3;
+				continue remove;
+			}
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Maybe$Just(_p4._0._0),
+				_1: A2(_avh4$elm_fifo$Fifo$Fifo, _p4._0._1, _p4._1)
+			};
+		}
+	}
+};
+var _avh4$elm_fifo$Fifo$fromList = function (list) {
+	return A2(
+		_avh4$elm_fifo$Fifo$Fifo,
+		list,
+		{ctor: '[]'});
+};

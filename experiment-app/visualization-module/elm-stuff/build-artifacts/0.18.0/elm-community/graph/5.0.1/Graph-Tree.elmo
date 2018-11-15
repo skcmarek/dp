@@ -1,0 +1,182 @@
+var _elm_community$graph$Graph_Tree$pushMany = F2(
+	function (vals, queue) {
+		return A3(_elm_lang$core$List$foldl, _avh4$elm_fifo$Fifo$insert, queue, vals);
+	});
+var _elm_community$graph$Graph_Tree$listForTraversal = F2(
+	function (traversal, tree) {
+		var acc = _elm_lang$core$Basics$identity;
+		var f = F3(
+			function (label, children, rest) {
+				return function (_p0) {
+					return rest(
+						A2(
+							F2(
+								function (x, y) {
+									return {ctor: '::', _0: x, _1: y};
+								}),
+							label,
+							_p0));
+				};
+			});
+		return A4(
+			traversal,
+			f,
+			acc,
+			tree,
+			{ctor: '[]'});
+	});
+var _elm_community$graph$Graph_Tree$size = function (tree) {
+	var _p1 = tree;
+	return _p1._0;
+};
+var _elm_community$graph$Graph_Tree$root = function (tree) {
+	var _p2 = tree;
+	return _p2._1;
+};
+var _elm_community$graph$Graph_Tree$height = function (tree) {
+	var go = F2(
+		function (h, t) {
+			var _p3 = _elm_community$graph$Graph_Tree$root(t);
+			if (_p3.ctor === 'Just') {
+				return A3(
+					_elm_lang$core$List$foldl,
+					function (_p4) {
+						return _elm_lang$core$Basics$max(
+							A2(go, h + 1, _p4));
+					},
+					h + 1,
+					_p3._0._1);
+			} else {
+				return h;
+			}
+		});
+	return A2(go, 0, tree);
+};
+var _elm_community$graph$Graph_Tree$levelOrder = F3(
+	function (visit, acc, tree) {
+		var go = F2(
+			function (acc, toVisit) {
+				go:
+				while (true) {
+					var _p5 = _avh4$elm_fifo$Fifo$remove(toVisit);
+					if (_p5._0.ctor === 'Nothing') {
+						return acc;
+					} else {
+						var _p8 = _p5._1;
+						var _p6 = _elm_community$graph$Graph_Tree$root(_p5._0._0);
+						if (_p6.ctor === 'Nothing') {
+							var _v5 = acc,
+								_v6 = _p8;
+							acc = _v5;
+							toVisit = _v6;
+							continue go;
+						} else {
+							var _p7 = _p6._0._1;
+							var _v7 = A3(visit, _p6._0._0, _p7, acc),
+								_v8 = A2(_elm_community$graph$Graph_Tree$pushMany, _p7, _p8);
+							acc = _v7;
+							toVisit = _v8;
+							continue go;
+						}
+					}
+				}
+			});
+		return A2(
+			go,
+			acc,
+			A2(_avh4$elm_fifo$Fifo$insert, tree, _avh4$elm_fifo$Fifo$empty));
+	});
+var _elm_community$graph$Graph_Tree$levelOrderList = _elm_community$graph$Graph_Tree$listForTraversal(_elm_community$graph$Graph_Tree$levelOrder);
+var _elm_community$graph$Graph_Tree$postOrder = F3(
+	function (visit, acc, tree) {
+		var folder = _elm_lang$core$Basics$flip(
+			_elm_community$graph$Graph_Tree$postOrder(visit));
+		var _p9 = _elm_community$graph$Graph_Tree$root(tree);
+		if (_p9.ctor === 'Nothing') {
+			return acc;
+		} else {
+			var _p10 = _p9._0._1;
+			return A3(
+				visit,
+				_p9._0._0,
+				_p10,
+				A3(_elm_lang$core$List$foldl, folder, acc, _p10));
+		}
+	});
+var _elm_community$graph$Graph_Tree$postOrderList = _elm_community$graph$Graph_Tree$listForTraversal(_elm_community$graph$Graph_Tree$postOrder);
+var _elm_community$graph$Graph_Tree$preOrder = F3(
+	function (visit, acc, tree) {
+		var folder = _elm_lang$core$Basics$flip(
+			_elm_community$graph$Graph_Tree$preOrder(visit));
+		var _p11 = _elm_community$graph$Graph_Tree$root(tree);
+		if (_p11.ctor === 'Nothing') {
+			return acc;
+		} else {
+			var _p12 = _p11._0._1;
+			return A3(
+				_elm_lang$core$List$foldl,
+				folder,
+				A3(visit, _p11._0._0, _p12, acc),
+				_p12);
+		}
+	});
+var _elm_community$graph$Graph_Tree$preOrderList = _elm_community$graph$Graph_Tree$listForTraversal(_elm_community$graph$Graph_Tree$preOrder);
+var _elm_community$graph$Graph_Tree$MkTree = F2(
+	function (a, b) {
+		return {ctor: 'MkTree', _0: a, _1: b};
+	});
+var _elm_community$graph$Graph_Tree$empty = A2(_elm_community$graph$Graph_Tree$MkTree, 0, _elm_lang$core$Maybe$Nothing);
+var _elm_community$graph$Graph_Tree$isEmpty = function (tree) {
+	return _elm_lang$core$Native_Utils.eq(tree, _elm_community$graph$Graph_Tree$empty);
+};
+var _elm_community$graph$Graph_Tree$inner = F2(
+	function (label, children) {
+		var nonEmptyChildren = A2(
+			_elm_lang$core$List$filter,
+			function (_p13) {
+				return !_elm_community$graph$Graph_Tree$isEmpty(_p13);
+			},
+			children);
+		var totalSize = A3(
+			_elm_lang$core$List$foldl,
+			function (_p14) {
+				return F2(
+					function (x, y) {
+						return x + y;
+					})(
+					_elm_community$graph$Graph_Tree$size(_p14));
+			},
+			1,
+			nonEmptyChildren);
+		return A2(
+			_elm_community$graph$Graph_Tree$MkTree,
+			totalSize,
+			_elm_lang$core$Maybe$Just(
+				{ctor: '_Tuple2', _0: label, _1: nonEmptyChildren}));
+	});
+var _elm_community$graph$Graph_Tree$leaf = function (val) {
+	return A2(
+		_elm_community$graph$Graph_Tree$inner,
+		val,
+		{ctor: '[]'});
+};
+var _elm_community$graph$Graph_Tree$unfoldTree = F2(
+	function (next, seed) {
+		var _p15 = next(seed);
+		var label = _p15._0;
+		var seeds = _p15._1;
+		return A2(
+			_elm_community$graph$Graph_Tree$inner,
+			label,
+			A2(
+				_elm_lang$core$List$map,
+				_elm_community$graph$Graph_Tree$unfoldTree(next),
+				seeds));
+	});
+var _elm_community$graph$Graph_Tree$unfoldForest = F2(
+	function (next, seeds) {
+		return A2(
+			_elm_lang$core$List$map,
+			_elm_community$graph$Graph_Tree$unfoldTree(next),
+			seeds);
+	});

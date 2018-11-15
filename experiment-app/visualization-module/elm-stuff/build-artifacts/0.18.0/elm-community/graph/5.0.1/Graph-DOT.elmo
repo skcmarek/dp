@@ -1,0 +1,172 @@
+var _elm_community$graph$Graph_DOT$outputWithStylesAndAttributes = F4(
+	function (styles, nodeAttrs, edgeAttrs, graph) {
+		var nodes = _elm_community$graph$Graph$nodes(graph);
+		var edges = function () {
+			var compareEdge = F2(
+				function (a, b) {
+					var _p0 = A2(_elm_lang$core$Basics$compare, a.from, b.from);
+					switch (_p0.ctor) {
+						case 'LT':
+							return _elm_lang$core$Basics$LT;
+						case 'GT':
+							return _elm_lang$core$Basics$GT;
+						default:
+							return A2(_elm_lang$core$Basics$compare, a.to, b.to);
+					}
+				});
+			return A2(
+				_elm_lang$core$List$sortWith,
+				compareEdge,
+				_elm_community$graph$Graph$edges(graph));
+		}();
+		var attrAssocs = function (_p1) {
+			return A2(
+				_elm_lang$core$String$join,
+				', ',
+				A2(
+					_elm_lang$core$List$map,
+					function (_p2) {
+						var _p3 = _p2;
+						return A2(
+							_elm_lang$core$Basics_ops['++'],
+							_p3._0,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'=',
+								_elm_lang$core$Basics$toString(_p3._1)));
+					},
+					_elm_lang$core$Dict$toList(_p1)));
+		};
+		var makeAttrs = function (d) {
+			return _elm_lang$core$Dict$isEmpty(d) ? '' : A2(
+				_elm_lang$core$Basics_ops['++'],
+				' [',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					attrAssocs(d),
+					']'));
+		};
+		var edge = function (e) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'  ',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(e.from),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						' -> ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(e.to),
+							makeAttrs(
+								edgeAttrs(e.label))))));
+		};
+		var edgesString = A2(
+			_elm_lang$core$String$join,
+			'\n',
+			A2(_elm_lang$core$List$map, edge, edges));
+		var node = function (n) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'  ',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(n.id),
+					makeAttrs(
+						nodeAttrs(n.label))));
+		};
+		var nodesString = A2(
+			_elm_lang$core$String$join,
+			'\n',
+			A2(_elm_lang$core$List$map, node, nodes));
+		return A2(
+			_elm_lang$core$String$join,
+			'\n',
+			{
+				ctor: '::',
+				_0: 'digraph G {',
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$core$Basics_ops['++'],
+						'  rankdir=',
+						_elm_lang$core$Basics$toString(styles.rankdir)),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$core$Basics_ops['++'],
+							'  graph [',
+							A2(_elm_lang$core$Basics_ops['++'], styles.graph, ']')),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$core$Basics_ops['++'],
+								'  node [',
+								A2(_elm_lang$core$Basics_ops['++'], styles.node, ']')),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Basics_ops['++'],
+									'  edge [',
+									A2(_elm_lang$core$Basics_ops['++'], styles.edge, ']')),
+								_1: {
+									ctor: '::',
+									_0: '',
+									_1: {
+										ctor: '::',
+										_0: edgesString,
+										_1: {
+											ctor: '::',
+											_0: '',
+											_1: {
+												ctor: '::',
+												_0: nodesString,
+												_1: {
+													ctor: '::',
+													_0: '}',
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+	});
+var _elm_community$graph$Graph_DOT$outputWithStyles = F4(
+	function (styles, mapNode, mapEdge, graph) {
+		var labelOnly = function (maybeLabel) {
+			var _p4 = maybeLabel;
+			if (_p4.ctor === 'Nothing') {
+				return _elm_lang$core$Dict$empty;
+			} else {
+				return A2(_elm_lang$core$Dict$singleton, 'label', _p4._0);
+			}
+		};
+		return A4(
+			_elm_community$graph$Graph_DOT$outputWithStylesAndAttributes,
+			styles,
+			function (_p5) {
+				return labelOnly(
+					mapNode(_p5));
+			},
+			function (_p6) {
+				return labelOnly(
+					mapEdge(_p6));
+			},
+			graph);
+	});
+var _elm_community$graph$Graph_DOT$Styles = F4(
+	function (a, b, c, d) {
+		return {rankdir: a, graph: b, node: c, edge: d};
+	});
+var _elm_community$graph$Graph_DOT$RL = {ctor: 'RL'};
+var _elm_community$graph$Graph_DOT$BT = {ctor: 'BT'};
+var _elm_community$graph$Graph_DOT$LR = {ctor: 'LR'};
+var _elm_community$graph$Graph_DOT$TB = {ctor: 'TB'};
+var _elm_community$graph$Graph_DOT$defaultStyles = A4(_elm_community$graph$Graph_DOT$Styles, _elm_community$graph$Graph_DOT$TB, '', '', '');
+var _elm_community$graph$Graph_DOT$output = _elm_community$graph$Graph_DOT$outputWithStyles(_elm_community$graph$Graph_DOT$defaultStyles);

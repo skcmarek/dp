@@ -1,0 +1,57 @@
+var _elm_community$intdict$IntDict_Safe$InvalidKey = {ctor: 'InvalidKey'};
+var _elm_community$intdict$IntDict_Safe$safeWrapper = F2(
+	function (k, f) {
+		return (!_elm_community$intdict$IntDict$isValidKey(k)) ? _elm_lang$core$Result$Err(_elm_community$intdict$IntDict_Safe$InvalidKey) : _elm_lang$core$Result$Ok(
+			f(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_community$intdict$IntDict_Safe$safeInsert = F3(
+	function (k, v, dict) {
+		return A2(
+			_elm_community$intdict$IntDict_Safe$safeWrapper,
+			k,
+			function (_p0) {
+				var _p1 = _p0;
+				return A3(_elm_community$intdict$IntDict$insert, k, v, dict);
+			});
+	});
+var _elm_community$intdict$IntDict_Safe$safeRemove = F2(
+	function (k, dict) {
+		return A2(
+			_elm_community$intdict$IntDict_Safe$safeWrapper,
+			k,
+			function (_p2) {
+				var _p3 = _p2;
+				return A2(_elm_community$intdict$IntDict$remove, k, dict);
+			});
+	});
+var _elm_community$intdict$IntDict_Safe$safeUpdate = F3(
+	function (k, alter, dict) {
+		return A2(
+			_elm_community$intdict$IntDict_Safe$safeWrapper,
+			k,
+			function (_p4) {
+				var _p5 = _p4;
+				return A3(_elm_community$intdict$IntDict$update, k, alter, dict);
+			});
+	});
+var _elm_community$intdict$IntDict_Safe$safeGet = F2(
+	function (k, dict) {
+		return A2(
+			_elm_community$intdict$IntDict_Safe$safeWrapper,
+			k,
+			function (_p6) {
+				var _p7 = _p6;
+				return A2(_elm_community$intdict$IntDict$get, k, dict);
+			});
+	});
+var _elm_community$intdict$IntDict_Safe$safeMember = F2(
+	function (k, dict) {
+		return A2(
+			_elm_community$intdict$IntDict_Safe$safeWrapper,
+			k,
+			function (_p8) {
+				var _p9 = _p8;
+				return A2(_elm_community$intdict$IntDict$member, k, dict);
+			});
+	});

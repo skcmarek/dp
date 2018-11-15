@@ -1,0 +1,1033 @@
+var _elm_community$graph$Graph$ignorePath = F4(
+	function (visit, path, _p0, acc) {
+		var _p1 = path;
+		if (_p1.ctor === '[]') {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Graph',
+				{
+					start: {line: 1084, column: 5},
+					end: {line: 1089, column: 26}
+				},
+				_p1)('Graph.ignorePath: No algorithm should ever pass an empty path into this BfsNodeVisitor.');
+		} else {
+			return A2(visit, _p1._0, acc);
+		}
+	});
+var _elm_community$graph$Graph$onFinish = F3(
+	function (visitor, ctx, acc) {
+		return {
+			ctor: '_Tuple2',
+			_0: acc,
+			_1: visitor(ctx)
+		};
+	});
+var _elm_community$graph$Graph$onDiscovery = F3(
+	function (visitor, ctx, acc) {
+		return {
+			ctor: '_Tuple2',
+			_0: A2(visitor, ctx, acc),
+			_1: _elm_lang$core$Basics$identity
+		};
+	});
+var _elm_community$graph$Graph$alongIncomingEdges = function (ctx) {
+	return _elm_community$intdict$IntDict$keys(ctx.incoming);
+};
+var _elm_community$graph$Graph$alongOutgoingEdges = function (ctx) {
+	return _elm_community$intdict$IntDict$keys(ctx.outgoing);
+};
+var _elm_community$graph$Graph$applyEdgeDiff = F3(
+	function (nodeId, diff, graphRep) {
+		var updateOutgoingEdge = F2(
+			function (upd, node) {
+				return _elm_lang$core$Native_Utils.update(
+					node,
+					{
+						outgoing: A3(_elm_community$intdict$IntDict$update, nodeId, upd, node.outgoing)
+					});
+			});
+		var updateIncomingEdge = F2(
+			function (upd, node) {
+				return _elm_lang$core$Native_Utils.update(
+					node,
+					{
+						incoming: A3(_elm_community$intdict$IntDict$update, nodeId, upd, node.incoming)
+					});
+			});
+		var edgeUpdateToMaybe = function (edgeUpdate) {
+			var _p3 = edgeUpdate;
+			if (_p3.ctor === 'Insert') {
+				return _elm_lang$core$Maybe$Just(_p3._0);
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		};
+		var updateAdjacency = F3(
+			function (updateEdge, updatedId, edgeUpdate) {
+				var updateLbl = updateEdge(
+					_elm_lang$core$Basics$always(
+						edgeUpdateToMaybe(edgeUpdate)));
+				return A2(
+					_elm_community$intdict$IntDict$update,
+					updatedId,
+					_elm_lang$core$Maybe$map(updateLbl));
+			});
+		var flippedFoldl = F3(
+			function (f, dict, acc) {
+				return A3(_elm_community$intdict$IntDict$foldl, f, acc, dict);
+			});
+		return A3(
+			flippedFoldl,
+			updateAdjacency(updateOutgoingEdge),
+			diff.outgoing,
+			A3(
+				flippedFoldl,
+				updateAdjacency(updateIncomingEdge),
+				diff.incoming,
+				graphRep));
+	});
+var _elm_community$graph$Graph$emptyDiff = {incoming: _elm_community$intdict$IntDict$empty, outgoing: _elm_community$intdict$IntDict$empty};
+var _elm_community$graph$Graph$unGraph = function (graph) {
+	var _p4 = graph;
+	return _p4._0;
+};
+var _elm_community$graph$Graph$size = function (_p5) {
+	return _elm_community$intdict$IntDict$size(
+		_elm_community$graph$Graph$unGraph(_p5));
+};
+var _elm_community$graph$Graph$member = function (nodeId) {
+	return function (_p6) {
+		return A2(
+			_elm_community$intdict$IntDict$member,
+			nodeId,
+			_elm_community$graph$Graph$unGraph(_p6));
+	};
+};
+var _elm_community$graph$Graph$get = function (nodeId) {
+	return function (_p7) {
+		return A2(
+			_elm_community$intdict$IntDict$get,
+			nodeId,
+			_elm_community$graph$Graph$unGraph(_p7));
+	};
+};
+var _elm_community$graph$Graph$unsafeGet = F3(
+	function (msg, id, graph) {
+		var _p8 = A2(_elm_community$graph$Graph$get, id, graph);
+		if (_p8.ctor === 'Nothing') {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Graph',
+				{
+					start: {line: 735, column: 5},
+					end: {line: 740, column: 16}
+				},
+				_p8)(msg);
+		} else {
+			return _p8._0;
+		}
+	});
+var _elm_community$graph$Graph$topologicalSort = function (_p10) {
+	var _p11 = _p10;
+	var error = 'Graph.topologicalSort: Invalid `AcyclicGraph`, where the ordering contained nodes not present in the graph';
+	return A2(
+		_elm_lang$core$List$map,
+		function (id) {
+			return A3(_elm_community$graph$Graph$unsafeGet, error, id, _p11._0);
+		},
+		_p11._1);
+};
+var _elm_community$graph$Graph$nodeIdRange = function (graph) {
+	return A2(
+		_elm_lang$core$Maybe$andThen,
+		function (_p12) {
+			var _p13 = _p12;
+			return A2(
+				_elm_lang$core$Maybe$andThen,
+				function (_p14) {
+					var _p15 = _p14;
+					return _elm_lang$core$Maybe$Just(
+						{ctor: '_Tuple2', _0: _p13._0, _1: _p15._0});
+				},
+				_elm_community$intdict$IntDict$findMax(
+					_elm_community$graph$Graph$unGraph(graph)));
+		},
+		_elm_community$intdict$IntDict$findMin(
+			_elm_community$graph$Graph$unGraph(graph)));
+};
+var _elm_community$graph$Graph$nodes = function (_p16) {
+	return A2(
+		_elm_lang$core$List$map,
+		function (_) {
+			return _.node;
+		},
+		_elm_community$intdict$IntDict$values(
+			_elm_community$graph$Graph$unGraph(_p16)));
+};
+var _elm_community$graph$Graph$nodeIds = function (_p17) {
+	return _elm_community$intdict$IntDict$keys(
+		_elm_community$graph$Graph$unGraph(_p17));
+};
+var _elm_community$graph$Graph$edges = function (graph) {
+	var flippedFoldl = F3(
+		function (f, dict, list) {
+			return A3(_elm_community$intdict$IntDict$foldl, f, list, dict);
+		});
+	var prependEdges = F2(
+		function (node1, ctx) {
+			return A2(
+				flippedFoldl,
+				F2(
+					function (node2, e) {
+						return F2(
+							function (x, y) {
+								return {ctor: '::', _0: x, _1: y};
+							})(
+							{to: node2, from: node1, label: e});
+					}),
+				ctx.outgoing);
+		});
+	return A3(
+		flippedFoldl,
+		prependEdges,
+		_elm_community$graph$Graph$unGraph(graph),
+		{ctor: '[]'});
+};
+var _elm_community$graph$Graph$toString = function (graph) {
+	var edgeList = _elm_community$graph$Graph$edges(graph);
+	var nodeList = _elm_community$graph$Graph$nodes(graph);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'Graph.fromNodesAndEdges ',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(nodeList),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				' ',
+				_elm_lang$core$Basics$toString(edgeList))));
+};
+var _elm_community$graph$Graph$Node = F2(
+	function (a, b) {
+		return {id: a, label: b};
+	});
+var _elm_community$graph$Graph$Edge = F3(
+	function (a, b, c) {
+		return {from: a, to: b, label: c};
+	});
+var _elm_community$graph$Graph$NodeContext = F3(
+	function (a, b, c) {
+		return {node: a, incoming: b, outgoing: c};
+	});
+var _elm_community$graph$Graph$EdgeDiff = F2(
+	function (a, b) {
+		return {incoming: a, outgoing: b};
+	});
+var _elm_community$graph$Graph$Graph = function (a) {
+	return {ctor: 'Graph', _0: a};
+};
+var _elm_community$graph$Graph$empty = _elm_community$graph$Graph$Graph(_elm_community$intdict$IntDict$empty);
+var _elm_community$graph$Graph$isEmpty = function (graph) {
+	return _elm_lang$core$Native_Utils.eq(graph, _elm_community$graph$Graph$empty);
+};
+var _elm_community$graph$Graph$fromNodesAndEdges = F2(
+	function (nodes, edges) {
+		var addEdge = F2(
+			function (edge, rep) {
+				var updateIncoming = function (ctx) {
+					return _elm_lang$core$Native_Utils.update(
+						ctx,
+						{
+							incoming: A3(_elm_community$intdict$IntDict$insert, edge.from, edge.label, ctx.incoming)
+						});
+				};
+				var updateOutgoing = function (ctx) {
+					return _elm_lang$core$Native_Utils.update(
+						ctx,
+						{
+							outgoing: A3(_elm_community$intdict$IntDict$insert, edge.to, edge.label, ctx.outgoing)
+						});
+				};
+				return A3(
+					_elm_community$intdict$IntDict$update,
+					edge.to,
+					_elm_lang$core$Maybe$map(updateIncoming),
+					A3(
+						_elm_community$intdict$IntDict$update,
+						edge.from,
+						_elm_lang$core$Maybe$map(updateOutgoing),
+						rep));
+			});
+		var addEdgeIfValid = F2(
+			function (edge, rep) {
+				return (A2(_elm_community$intdict$IntDict$member, edge.from, rep) && A2(_elm_community$intdict$IntDict$member, edge.to, rep)) ? A2(addEdge, edge, rep) : rep;
+			});
+		var nodeRep = A3(
+			_elm_lang$core$List$foldl,
+			function (n) {
+				return A2(
+					_elm_community$intdict$IntDict$insert,
+					n.id,
+					A3(_elm_community$graph$Graph$NodeContext, n, _elm_community$intdict$IntDict$empty, _elm_community$intdict$IntDict$empty));
+			},
+			_elm_community$intdict$IntDict$empty,
+			nodes);
+		return _elm_community$graph$Graph$Graph(
+			A3(_elm_lang$core$List$foldl, addEdgeIfValid, nodeRep, edges));
+	});
+var _elm_community$graph$Graph$fromNodeLabelsAndEdgePairs = F2(
+	function (labels, edgePairs) {
+		var edges = A2(
+			_elm_lang$core$List$map,
+			function (_p18) {
+				var _p19 = _p18;
+				return A3(
+					_elm_community$graph$Graph$Edge,
+					_p19._0,
+					_p19._1,
+					{ctor: '_Tuple0'});
+			},
+			edgePairs);
+		var nodes = _elm_lang$core$Tuple$second(
+			A3(
+				_elm_lang$core$List$foldl,
+				F2(
+					function (lbl, _p20) {
+						var _p21 = _p20;
+						var _p22 = _p21._0;
+						return {
+							ctor: '_Tuple2',
+							_0: _p22 + 1,
+							_1: {
+								ctor: '::',
+								_0: A2(_elm_community$graph$Graph$Node, _p22, lbl),
+								_1: _p21._1
+							}
+						};
+					}),
+				{
+					ctor: '_Tuple2',
+					_0: 0,
+					_1: {ctor: '[]'}
+				},
+				labels));
+		return A2(_elm_community$graph$Graph$fromNodesAndEdges, nodes, edges);
+	});
+var _elm_community$graph$Graph$symmetricClosure = function (edgeMerger) {
+	var orderedEdgeMerger = F4(
+		function (from, to, outgoing, incoming) {
+			return (_elm_lang$core$Native_Utils.cmp(from, to) < 1) ? A4(edgeMerger, from, to, outgoing, incoming) : A4(edgeMerger, to, from, incoming, outgoing);
+		});
+	var updateContext = F2(
+		function (nodeId, ctx) {
+			var edges = A3(
+				_elm_community$intdict$IntDict$uniteWith,
+				orderedEdgeMerger(nodeId),
+				ctx.outgoing,
+				ctx.incoming);
+			return _elm_lang$core$Native_Utils.update(
+				ctx,
+				{outgoing: edges, incoming: edges});
+		});
+	return function (_p23) {
+		return _elm_community$graph$Graph$Graph(
+			A2(
+				_elm_community$intdict$IntDict$map,
+				updateContext,
+				_elm_community$graph$Graph$unGraph(_p23)));
+	};
+};
+var _elm_community$graph$Graph$reverseEdges = function () {
+	var updateContext = F2(
+		function (nodeId, ctx) {
+			return _elm_lang$core$Native_Utils.update(
+				ctx,
+				{outgoing: ctx.incoming, incoming: ctx.outgoing});
+		});
+	return function (_p24) {
+		return _elm_community$graph$Graph$Graph(
+			A2(
+				_elm_community$intdict$IntDict$map,
+				updateContext,
+				_elm_community$graph$Graph$unGraph(_p24)));
+	};
+}();
+var _elm_community$graph$Graph$Remove = function (a) {
+	return {ctor: 'Remove', _0: a};
+};
+var _elm_community$graph$Graph$Insert = function (a) {
+	return {ctor: 'Insert', _0: a};
+};
+var _elm_community$graph$Graph$computeEdgeDiff = F2(
+	function (old, $new) {
+		var collectUpdates = F3(
+			function (edgeUpdate, updatedId, label) {
+				var replaceUpdate = function (old) {
+					var _p25 = {
+						ctor: '_Tuple2',
+						_0: old,
+						_1: edgeUpdate(label)
+					};
+					if (_p25._0.ctor === 'Just') {
+						if (_p25._0._0.ctor === 'Remove') {
+							if (_p25._1.ctor === 'Insert') {
+								var _p26 = _p25._1._0;
+								return _elm_lang$core$Native_Utils.eq(_p25._0._0._0, _p26) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
+									_elm_community$graph$Graph$Insert(_p26));
+							} else {
+								return _elm_lang$core$Native_Utils.crashCase(
+									'Graph',
+									{
+										start: {line: 247, column: 21},
+										end: {line: 261, column: 36}
+									},
+									_p25)('Graph.computeEdgeDiff: Collected two removals for the same edge. This is an error in the implementation of Graph and you should file a bug report!');
+							}
+						} else {
+							return _elm_lang$core$Native_Utils.crashCase(
+								'Graph',
+								{
+									start: {line: 247, column: 21},
+									end: {line: 261, column: 36}
+								},
+								_p25)('Graph.computeEdgeDiff: Collected inserts before removals. This is an error in the implementation of Graph and you should file a bug report!');
+						}
+					} else {
+						return _elm_lang$core$Maybe$Just(_p25._1);
+					}
+				};
+				return A2(_elm_community$intdict$IntDict$update, updatedId, replaceUpdate);
+			});
+		var collect = F3(
+			function (edgeUpdate, adj, updates) {
+				return A3(
+					_elm_community$intdict$IntDict$foldl,
+					collectUpdates(edgeUpdate),
+					updates,
+					adj);
+			});
+		var _p29 = {ctor: '_Tuple2', _0: old, _1: $new};
+		if (_p29._0.ctor === 'Nothing') {
+			if (_p29._1.ctor === 'Nothing') {
+				return _elm_community$graph$Graph$emptyDiff;
+			} else {
+				var _p31 = _p29._1._0;
+				return {
+					outgoing: A3(collect, _elm_community$graph$Graph$Insert, _p31.incoming, _elm_community$intdict$IntDict$empty),
+					incoming: A3(collect, _elm_community$graph$Graph$Insert, _p31.outgoing, _elm_community$intdict$IntDict$empty)
+				};
+			}
+		} else {
+			if (_p29._1.ctor === 'Nothing') {
+				var _p30 = _p29._0._0;
+				return {
+					outgoing: A3(collect, _elm_community$graph$Graph$Remove, _p30.incoming, _elm_community$intdict$IntDict$empty),
+					incoming: A3(collect, _elm_community$graph$Graph$Remove, _p30.outgoing, _elm_community$intdict$IntDict$empty)
+				};
+			} else {
+				var _p33 = _p29._0._0;
+				var _p32 = _p29._1._0;
+				return _elm_lang$core$Native_Utils.eq(_p33, _p32) ? _elm_community$graph$Graph$emptyDiff : {
+					outgoing: A3(
+						collect,
+						_elm_community$graph$Graph$Insert,
+						_p32.incoming,
+						A3(collect, _elm_community$graph$Graph$Remove, _p33.incoming, _elm_community$intdict$IntDict$empty)),
+					incoming: A3(
+						collect,
+						_elm_community$graph$Graph$Insert,
+						_p32.outgoing,
+						A3(collect, _elm_community$graph$Graph$Remove, _p33.outgoing, _elm_community$intdict$IntDict$empty))
+				};
+			}
+		}
+	});
+var _elm_community$graph$Graph$update = F2(
+	function (nodeId, updater) {
+		var wrappedUpdater = function (rep) {
+			var filterInvalidEdges = function (ctx) {
+				return _elm_community$intdict$IntDict$filter(
+					F2(
+						function (id, _p34) {
+							return _elm_lang$core$Native_Utils.eq(id, ctx.node.id) || A2(_elm_community$intdict$IntDict$member, id, rep);
+						}));
+			};
+			var cleanUpEdges = function (ctx) {
+				return _elm_lang$core$Native_Utils.update(
+					ctx,
+					{
+						incoming: A2(filterInvalidEdges, ctx, ctx.incoming),
+						outgoing: A2(filterInvalidEdges, ctx, ctx.outgoing)
+					});
+			};
+			var old = A2(_elm_community$intdict$IntDict$get, nodeId, rep);
+			var $new = A2(
+				_elm_lang$core$Maybe$map,
+				cleanUpEdges,
+				updater(old));
+			var diff = A2(_elm_community$graph$Graph$computeEdgeDiff, old, $new);
+			return A3(
+				_elm_community$intdict$IntDict$update,
+				nodeId,
+				_elm_lang$core$Basics$always($new),
+				A3(_elm_community$graph$Graph$applyEdgeDiff, nodeId, diff, rep));
+		};
+		return function (_p35) {
+			return _elm_community$graph$Graph$Graph(
+				wrappedUpdater(
+					_elm_community$graph$Graph$unGraph(_p35)));
+		};
+	});
+var _elm_community$graph$Graph$insert = F2(
+	function (nodeContext, graph) {
+		return A3(
+			_elm_community$graph$Graph$update,
+			nodeContext.node.id,
+			_elm_lang$core$Basics$always(
+				_elm_lang$core$Maybe$Just(nodeContext)),
+			graph);
+	});
+var _elm_community$graph$Graph$inducedSubgraph = F2(
+	function (nodeIds, graph) {
+		var insertContextById = F2(
+			function (nodeId, acc) {
+				var _p36 = A2(_elm_community$graph$Graph$get, nodeId, graph);
+				if (_p36.ctor === 'Just') {
+					return A2(_elm_community$graph$Graph$insert, _p36._0, acc);
+				} else {
+					return acc;
+				}
+			});
+		return A3(_elm_lang$core$List$foldl, insertContextById, _elm_community$graph$Graph$empty, nodeIds);
+	});
+var _elm_community$graph$Graph$remove = F2(
+	function (nodeId, graph) {
+		return A3(
+			_elm_community$graph$Graph$update,
+			nodeId,
+			_elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing),
+			graph);
+	});
+var _elm_community$graph$Graph$fold = F3(
+	function (f, acc, graph) {
+		var go = F2(
+			function (acc, graph1) {
+				go:
+				while (true) {
+					var maybeContext = A2(
+						_elm_lang$core$Maybe$andThen,
+						function (id) {
+							return A2(_elm_community$graph$Graph$get, id, graph);
+						},
+						A2(
+							_elm_lang$core$Maybe$map,
+							_elm_lang$core$Tuple$first,
+							_elm_community$graph$Graph$nodeIdRange(graph1)));
+					var _p37 = maybeContext;
+					if (_p37.ctor === 'Just') {
+						var _p38 = _p37._0;
+						var _v13 = A2(f, _p38, acc),
+							_v14 = A2(_elm_community$graph$Graph$remove, _p38.node.id, graph1);
+						acc = _v13;
+						graph1 = _v14;
+						continue go;
+					} else {
+						return acc;
+					}
+				}
+			});
+		return A2(go, acc, graph);
+	});
+var _elm_community$graph$Graph$mapContexts = function (f) {
+	return A2(
+		_elm_community$graph$Graph$fold,
+		function (ctx) {
+			return _elm_community$graph$Graph$insert(
+				f(ctx));
+		},
+		_elm_community$graph$Graph$empty);
+};
+var _elm_community$graph$Graph$mapNodes = function (f) {
+	return A2(
+		_elm_community$graph$Graph$fold,
+		function (ctx) {
+			return _elm_community$graph$Graph$insert(
+				_elm_lang$core$Native_Utils.update(
+					ctx,
+					{
+						node: {
+							id: ctx.node.id,
+							label: f(ctx.node.label)
+						}
+					}));
+		},
+		_elm_community$graph$Graph$empty);
+};
+var _elm_community$graph$Graph$mapEdges = function (f) {
+	return A2(
+		_elm_community$graph$Graph$fold,
+		function (ctx) {
+			return _elm_community$graph$Graph$insert(
+				_elm_lang$core$Native_Utils.update(
+					ctx,
+					{
+						outgoing: A2(
+							_elm_community$intdict$IntDict$map,
+							F2(
+								function (n, e) {
+									return f(e);
+								}),
+							ctx.outgoing),
+						incoming: A2(
+							_elm_community$intdict$IntDict$map,
+							F2(
+								function (n, e) {
+									return f(e);
+								}),
+							ctx.incoming)
+					}));
+		},
+		_elm_community$graph$Graph$empty);
+};
+var _elm_community$graph$Graph$guidedDfs = F5(
+	function (selectNeighbors, visitNode, seeds, acc, graph) {
+		var go = F3(
+			function (seeds, acc, graph) {
+				go:
+				while (true) {
+					var _p39 = seeds;
+					if (_p39.ctor === '[]') {
+						return {ctor: '_Tuple2', _0: acc, _1: graph};
+					} else {
+						var _p45 = _p39._1;
+						var _p44 = _p39._0;
+						var _p40 = A2(_elm_community$graph$Graph$get, _p44, graph);
+						if (_p40.ctor === 'Nothing') {
+							var _v17 = _p45,
+								_v18 = acc,
+								_v19 = graph;
+							seeds = _v17;
+							acc = _v18;
+							graph = _v19;
+							continue go;
+						} else {
+							var _p43 = _p40._0;
+							var _p41 = A2(visitNode, _p43, acc);
+							var accAfterDiscovery = _p41._0;
+							var finishNode = _p41._1;
+							var _p42 = A3(
+								go,
+								selectNeighbors(_p43),
+								accAfterDiscovery,
+								A2(_elm_community$graph$Graph$remove, _p44, graph));
+							var accBeforeFinish = _p42._0;
+							var graph1 = _p42._1;
+							var accAfterFinish = finishNode(accBeforeFinish);
+							var _v20 = _p45,
+								_v21 = accAfterFinish,
+								_v22 = graph1;
+							seeds = _v20;
+							acc = _v21;
+							graph = _v22;
+							continue go;
+						}
+					}
+				}
+			});
+		return A3(go, seeds, acc, graph);
+	});
+var _elm_community$graph$Graph$dfs = F3(
+	function (visitNode, acc, graph) {
+		return _elm_lang$core$Tuple$first(
+			A5(
+				_elm_community$graph$Graph$guidedDfs,
+				_elm_community$graph$Graph$alongOutgoingEdges,
+				visitNode,
+				_elm_community$graph$Graph$nodeIds(graph),
+				acc,
+				graph));
+	});
+var _elm_community$graph$Graph$dfsForest = F2(
+	function (seeds, graph) {
+		var visitNode = F2(
+			function (ctx, trees) {
+				return {
+					ctor: '_Tuple2',
+					_0: {ctor: '[]'},
+					_1: function (children) {
+						return {
+							ctor: '::',
+							_0: A2(_elm_community$graph$Graph_Tree$inner, ctx, children),
+							_1: trees
+						};
+					}
+				};
+			});
+		return _elm_lang$core$List$reverse(
+			_elm_lang$core$Tuple$first(
+				A5(
+					_elm_community$graph$Graph$guidedDfs,
+					_elm_community$graph$Graph$alongOutgoingEdges,
+					visitNode,
+					seeds,
+					{ctor: '[]'},
+					graph)));
+	});
+var _elm_community$graph$Graph$dfsTree = F2(
+	function (seed, graph) {
+		var _p46 = A2(
+			_elm_community$graph$Graph$dfsForest,
+			{
+				ctor: '::',
+				_0: seed,
+				_1: {ctor: '[]'}
+			},
+			graph);
+		if (_p46.ctor === '[]') {
+			return _elm_community$graph$Graph_Tree$empty;
+		} else {
+			if (_p46._1.ctor === '[]') {
+				return _p46._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Graph',
+					{
+						start: {line: 1020, column: 5},
+						end: {line: 1028, column: 126}
+					},
+					_p46)('dfsTree: There can\'t be more than one DFS tree. This invariant is violated, please report this bug.');
+			}
+		}
+	});
+var _elm_community$graph$Graph$guidedBfs = F5(
+	function (selectNeighbors, visitNode, seeds, acc, graph) {
+		var enqueueMany = F4(
+			function (distance, parentPath, nodeIds, queue) {
+				return A3(
+					_elm_lang$core$List$foldl,
+					_avh4$elm_fifo$Fifo$insert,
+					queue,
+					A2(
+						_elm_lang$core$List$map,
+						function (id) {
+							return {ctor: '_Tuple3', _0: id, _1: parentPath, _2: distance};
+						},
+						nodeIds));
+			});
+		var go = F3(
+			function (seeds, acc, graph) {
+				go:
+				while (true) {
+					var _p48 = _avh4$elm_fifo$Fifo$remove(seeds);
+					if (_p48._0.ctor === 'Nothing') {
+						return {ctor: '_Tuple2', _0: acc, _1: graph};
+					} else {
+						var _p53 = _p48._1;
+						var _p52 = _p48._0._0._0;
+						var _p51 = _p48._0._0._2;
+						var _p49 = A2(_elm_community$graph$Graph$get, _p52, graph);
+						if (_p49.ctor === 'Nothing') {
+							var _v26 = _p53,
+								_v27 = acc,
+								_v28 = graph;
+							seeds = _v26;
+							acc = _v27;
+							graph = _v28;
+							continue go;
+						} else {
+							var _p50 = _p49._0;
+							var path = {ctor: '::', _0: _p50, _1: _p48._0._0._1};
+							var accAfterVisit = A3(visitNode, path, _p51, acc);
+							var seeds2 = A4(
+								enqueueMany,
+								_p51 + 1,
+								path,
+								selectNeighbors(_p50),
+								_p53);
+							var _v29 = seeds2,
+								_v30 = accAfterVisit,
+								_v31 = A2(_elm_community$graph$Graph$remove, _p52, graph);
+							seeds = _v29;
+							acc = _v30;
+							graph = _v31;
+							continue go;
+						}
+					}
+				}
+			});
+		return A3(
+			go,
+			A4(
+				enqueueMany,
+				0,
+				{ctor: '[]'},
+				seeds,
+				_avh4$elm_fifo$Fifo$empty),
+			acc,
+			graph);
+	});
+var _elm_community$graph$Graph$bfs = F3(
+	function (visitNode, acc, graph) {
+		bfs:
+		while (true) {
+			var _p54 = _elm_community$graph$Graph$nodeIdRange(graph);
+			if (_p54.ctor === 'Nothing') {
+				return acc;
+			} else {
+				var _p55 = A5(
+					_elm_community$graph$Graph$guidedBfs,
+					_elm_community$graph$Graph$alongOutgoingEdges,
+					visitNode,
+					{
+						ctor: '::',
+						_0: _p54._0._0,
+						_1: {ctor: '[]'}
+					},
+					acc,
+					graph);
+				var finalAcc = _p55._0;
+				var restgraph1 = _p55._1;
+				var _v33 = visitNode,
+					_v34 = finalAcc,
+					_v35 = restgraph1;
+				visitNode = _v33;
+				acc = _v34;
+				graph = _v35;
+				continue bfs;
+			}
+		}
+	});
+var _elm_community$graph$Graph$heightLevels = function (_p56) {
+	var _p57 = _p56;
+	var _p70 = _p57._0;
+	var subtract = F2(
+		function (a, b) {
+			return b - a;
+		});
+	var decrementAndNoteSources = F3(
+		function (id, _p59, _p58) {
+			var _p60 = _p58;
+			var _p64 = _p60._0;
+			var indegreesDec = A3(
+				_elm_community$intdict$IntDict$update,
+				id,
+				_elm_lang$core$Maybe$map(
+					subtract(1)),
+				_p60._1);
+			var _p61 = A2(_elm_community$intdict$IntDict$get, id, indegreesDec);
+			if ((_p61.ctor === 'Just') && (_p61._0 === 0)) {
+				var _p62 = A2(_elm_community$graph$Graph$get, id, _p70);
+				if (_p62.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: {ctor: '::', _0: _p62._0, _1: _p64},
+						_1: indegreesDec
+					};
+				} else {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Graph',
+						{
+							start: {line: 1220, column: 21},
+							end: {line: 1225, column: 157}
+						},
+						_p62)('Graph.heightLevels: Could not get a node of a graph which should be there by invariants. Please file a bug report!');
+				}
+			} else {
+				return {ctor: '_Tuple2', _0: _p64, _1: indegreesDec};
+			}
+		});
+	var decrementIndegrees = F3(
+		function (source, nextLevel, indegrees) {
+			return A3(
+				_elm_community$intdict$IntDict$foldl,
+				decrementAndNoteSources,
+				{ctor: '_Tuple2', _0: nextLevel, _1: indegrees},
+				source.outgoing);
+		});
+	var go = F4(
+		function (currentLevel, nextLevel, indegrees, graph) {
+			var _p65 = {ctor: '_Tuple2', _0: currentLevel, _1: nextLevel};
+			if (_p65._0.ctor === '[]') {
+				if (_p65._1.ctor === '[]') {
+					return {
+						ctor: '::',
+						_0: {ctor: '[]'},
+						_1: {ctor: '[]'}
+					};
+				} else {
+					return {
+						ctor: '::',
+						_0: {ctor: '[]'},
+						_1: A4(
+							go,
+							nextLevel,
+							{ctor: '[]'},
+							indegrees,
+							graph)
+					};
+				}
+			} else {
+				var _p69 = _p65._0._0;
+				var _p66 = A3(decrementIndegrees, _p69, nextLevel, indegrees);
+				var nextLevel1 = _p66._0;
+				var indegrees1 = _p66._1;
+				var _p67 = A4(
+					go,
+					_p65._0._1,
+					nextLevel1,
+					indegrees1,
+					A2(_elm_community$graph$Graph$remove, _p69.node.id, graph));
+				if (_p67.ctor === '[]') {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Graph',
+						{
+							start: {line: 1246, column: 21},
+							end: {line: 1251, column: 56}
+						},
+						_p67)('Graph.heightLevels: Reached a branch which is impossible by invariants. Please file a bug report!');
+				} else {
+					return {
+						ctor: '::',
+						_0: {ctor: '::', _0: _p69, _1: _p67._0},
+						_1: _p67._1
+					};
+				}
+			}
+		});
+	var countIndegrees = A2(
+		_elm_community$graph$Graph$fold,
+		function (ctx) {
+			return A2(
+				_elm_community$intdict$IntDict$insert,
+				ctx.node.id,
+				_elm_community$intdict$IntDict$size(ctx.incoming));
+		},
+		_elm_community$intdict$IntDict$empty);
+	var isSource = function (ctx) {
+		return _elm_community$intdict$IntDict$isEmpty(ctx.incoming);
+	};
+	var sources = A3(
+		_elm_community$graph$Graph$fold,
+		F2(
+			function (ctx, acc) {
+				return isSource(ctx) ? {ctor: '::', _0: ctx, _1: acc} : acc;
+			}),
+		{ctor: '[]'},
+		_p70);
+	return A4(
+		go,
+		sources,
+		{ctor: '[]'},
+		countIndegrees(_p70),
+		_p70);
+};
+var _elm_community$graph$Graph$AcyclicGraph = F2(
+	function (a, b) {
+		return {ctor: 'AcyclicGraph', _0: a, _1: b};
+	});
+var _elm_community$graph$Graph$checkForBackEdges = F2(
+	function (ordering, graph) {
+		var success = function (_p71) {
+			return A2(_elm_community$graph$Graph$AcyclicGraph, graph, ordering);
+		};
+		var check = F2(
+			function (id, _p72) {
+				var _p73 = _p72;
+				var error = 'Graph.checkForBackEdges: `ordering` didn\'t contain `id`';
+				var ctx = A3(_elm_community$graph$Graph$unsafeGet, error, id, graph);
+				var backSetWithId = A3(
+					_elm_community$intdict$IntDict$insert,
+					id,
+					{ctor: '_Tuple0'},
+					_p73._0);
+				var backEdges = A2(_elm_community$intdict$IntDict$intersect, ctx.outgoing, backSetWithId);
+				var _p74 = _elm_community$intdict$IntDict$findMin(backEdges);
+				if (_p74.ctor === 'Nothing') {
+					return _elm_lang$core$Result$Ok(
+						{
+							ctor: '_Tuple2',
+							_0: backSetWithId,
+							_1: {ctor: '_Tuple0'}
+						});
+				} else {
+					return _elm_lang$core$Result$Err(
+						A3(_elm_community$graph$Graph$Edge, id, _p74._0._0, _p74._0._1));
+				}
+			});
+		return A2(
+			_elm_lang$core$Result$map,
+			success,
+			A3(
+				_elm_lang$core$List$foldl,
+				F2(
+					function (id, res) {
+						return A2(
+							_elm_lang$core$Result$andThen,
+							check(id),
+							res);
+					}),
+				_elm_lang$core$Result$Ok(
+					{
+						ctor: '_Tuple2',
+						_0: _elm_community$intdict$IntDict$empty,
+						_1: {ctor: '_Tuple0'}
+					}),
+				ordering));
+	});
+var _elm_community$graph$Graph$checkAcyclic = function (graph) {
+	var reversePostOrder = A3(
+		_elm_community$graph$Graph$dfs,
+		_elm_community$graph$Graph$onFinish(
+			function (_p75) {
+				return F2(
+					function (x, y) {
+						return {ctor: '::', _0: x, _1: y};
+					})(
+					function (_) {
+						return _.id;
+					}(
+						function (_) {
+							return _.node;
+						}(_p75)));
+			}),
+		{ctor: '[]'},
+		graph);
+	return A2(_elm_community$graph$Graph$checkForBackEdges, reversePostOrder, graph);
+};
+var _elm_community$graph$Graph$stronglyConnectedComponents = function (graph) {
+	var reversePostOrder = A3(
+		_elm_community$graph$Graph$dfs,
+		_elm_community$graph$Graph$onFinish(
+			function (_p76) {
+				return F2(
+					function (x, y) {
+						return {ctor: '::', _0: x, _1: y};
+					})(
+					function (_) {
+						return _.id;
+					}(
+						function (_) {
+							return _.node;
+						}(_p76)));
+			}),
+		{ctor: '[]'},
+		graph);
+	return A2(
+		_elm_lang$core$Result$mapError,
+		function (_p77) {
+			var forest = A2(
+				_elm_community$graph$Graph$dfsForest,
+				reversePostOrder,
+				_elm_community$graph$Graph$reverseEdges(graph));
+			return A2(
+				_elm_lang$core$List$map,
+				function (_p78) {
+					return _elm_community$graph$Graph$reverseEdges(
+						A3(
+							_elm_lang$core$List$foldr,
+							_elm_community$graph$Graph$insert,
+							_elm_community$graph$Graph$empty,
+							_elm_community$graph$Graph_Tree$preOrderList(_p78)));
+				},
+				forest);
+		},
+		A2(_elm_community$graph$Graph$checkForBackEdges, reversePostOrder, graph));
+};

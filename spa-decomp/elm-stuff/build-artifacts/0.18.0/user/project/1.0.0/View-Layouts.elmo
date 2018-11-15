@@ -1,0 +1,84 @@
+var _user$project$View_Layouts$error = function (err) {
+	return _user$project$View_Elements$errorDisplay(err);
+};
+var _user$project$View_Layouts$signUp = function (model) {
+	return _user$project$View_Elements$signUpBody(model.signupForm);
+};
+var _user$project$View_Layouts$login = function (model) {
+	return _user$project$View_Elements$loginBody(model.signupForm);
+};
+var _user$project$View_Layouts$makeLayout = F2(
+	function (header, body) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: header,
+				_1: {
+					ctor: '::',
+					_0: body,
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$View_Layouts$storeLayout = function (model) {
+	return A3(
+		_elm_lang$core$Basics$flip,
+		_user$project$View_Layouts$makeLayout,
+		_user$project$View_Elements$booksDiv(model.books),
+		A2(
+			_elm_lang$core$Maybe$withDefault,
+			_user$project$View_Elements$authHeader,
+			A2(_elm_lang$core$Maybe$map, _user$project$View_Elements$userHeader, model.user)));
+};
+var _user$project$View_Layouts$readBookContent = F2(
+	function (id, model) {
+		var _p0 = _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (b) {
+					return _elm_lang$core$Native_Utils.eq(b.id, id);
+				},
+				model.books));
+		if (_p0.ctor === 'Just') {
+			return A3(
+				_elm_lang$core$Basics$flip,
+				_user$project$View_Layouts$makeLayout,
+				_user$project$View_Elements$bookContetnDiv(_p0._0),
+				A2(
+					_elm_lang$core$Maybe$withDefault,
+					_user$project$View_Elements$authHeader,
+					A2(_elm_lang$core$Maybe$map, _user$project$View_Elements$userHeader, model.user)));
+		} else {
+			return _user$project$View_Layouts$error('ERR');
+		}
+	});
+var _user$project$View_Layouts$addBookLayout = function (model) {
+	var _p1 = model.user;
+	if (_p1.ctor === 'Just') {
+		return A2(
+			_user$project$View_Layouts$makeLayout,
+			_user$project$View_Elements$userHeader(_p1._0),
+			_user$project$View_Elements$createBookBody(model.bookForm));
+	} else {
+		return _user$project$View_Layouts$error('404 Not Found');
+	}
+};
+var _user$project$View_Layouts$view = function (model) {
+	var _p2 = model.route;
+	switch (_p2.ctor) {
+		case 'IndexRoute':
+			return _user$project$View_Layouts$storeLayout(model);
+		case 'BookDetailRoute':
+			return A2(_user$project$View_Layouts$readBookContent, _p2._0, model);
+		case 'AddBookRoute':
+			return _user$project$View_Layouts$addBookLayout(model);
+		case 'LoginRoute':
+			return _user$project$View_Layouts$login(model);
+		case 'SignUpRoute':
+			return _user$project$View_Layouts$signUp(model);
+		default:
+			return _user$project$View_Layouts$error('404 Not Found');
+	}
+};

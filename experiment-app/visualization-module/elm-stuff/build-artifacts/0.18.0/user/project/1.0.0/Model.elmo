@@ -1,0 +1,55 @@
+var _user$project$Model$addNodeToGraph = function (nodeRepres) {
+	var addNode = A2(_elm_community$graph$Graph$Node, nodeRepres.id, nodeRepres);
+	return _elm_community$graph$Graph$insert(
+		A3(_elm_community$graph$Graph$NodeContext, addNode, _elm_community$intdict$IntDict$empty, _elm_community$intdict$IntDict$empty));
+};
+var _user$project$Model$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		if (_p0.ctor === 'AddNode') {
+			var _p1 = _p0._0;
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						graph: A2(_user$project$Model$addNodeToGraph, _p1, model.graph),
+						nodeId: model.nodeId + 1
+					}),
+				{
+					ctor: '::',
+					_0: _user$project$Port$addNode(
+						A2(_user$project$Port$initNode, _p1.id, _p1.label)),
+					_1: {ctor: '[]'}
+				});
+		} else {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
+var _user$project$Model$makeNode = F3(
+	function (id, label, definition) {
+		return {id: id, label: label, definition: definition};
+	});
+var _user$project$Model$init = {
+	ctor: '_Tuple2',
+	_0: {graph: _elm_community$graph$Graph$empty, nodeId: 0, edgeId: 0},
+	_1: _elm_lang$core$Platform_Cmd$none
+};
+var _user$project$Model$NodeRepres = F3(
+	function (a, b, c) {
+		return {id: a, label: b, definition: c};
+	});
+var _user$project$Model$EdgeRepres = F5(
+	function (a, b, c, d, e) {
+		return {id: a, from: b, to: c, label: d, definition: e};
+	});
+var _user$project$Model$Model = F3(
+	function (a, b, c) {
+		return {graph: a, nodeId: b, edgeId: c};
+	});
+var _user$project$Model$AddNode = function (a) {
+	return {ctor: 'AddNode', _0: a};
+};
+var _user$project$Model$AddEdge = function (a) {
+	return {ctor: 'AddEdge', _0: a};
+};

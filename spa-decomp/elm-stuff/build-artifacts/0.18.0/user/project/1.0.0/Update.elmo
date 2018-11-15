@@ -1,0 +1,137 @@
+var _user$project$Update$reroute = function (model) {
+	var _p0 = {ctor: '_Tuple2', _0: model.route, _1: model.user};
+	_v0_3:
+	do {
+		if (_p0.ctor === '_Tuple2') {
+			if (_p0._1.ctor === 'Just') {
+				switch (_p0._0.ctor) {
+					case 'LoginRoute':
+						return {
+							ctor: '_Tuple2',
+							_0: model,
+							_1: _elm_lang$navigation$Navigation$modifyUrl(
+								_user$project$Routes$path(_user$project$Routes$IndexRoute))
+						};
+					case 'SignUpRoute':
+						return {
+							ctor: '_Tuple2',
+							_0: model,
+							_1: _elm_lang$navigation$Navigation$modifyUrl(
+								_user$project$Routes$path(_user$project$Routes$IndexRoute))
+						};
+					default:
+						break _v0_3;
+				}
+			} else {
+				if (_p0._0.ctor === 'AddBookRoute') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{route: _user$project$Routes$ErrRoute}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					break _v0_3;
+				}
+			}
+		} else {
+			break _v0_3;
+		}
+	} while(false);
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _user$project$Update$update = F2(
+	function (msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
+			case 'OnInputBook':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{bookForm: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'OnInputSignup':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signupForm: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'OnInputLogin':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{signupForm: _p1._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'OnLocationChange':
+				return _user$project$Update$reroute(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							route: _user$project$Routes$getLoc(_p1._0)
+						}));
+			case 'UpdateRoute':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_user$project$Routes$path(_p1._0))
+				};
+			case 'SignUp':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_user$project$Routes$path(_user$project$Routes$LoginRoute))
+				};
+			case 'Login':
+				return _user$project$Update$reroute(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							user: _elm_lang$core$Maybe$Just(
+								{email: model.signupForm.email})
+						}));
+			case 'Logout':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{user: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_user$project$Routes$path(_user$project$Routes$IndexRoute))
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Models_Models$createBook(model),
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_user$project$Routes$path(_user$project$Routes$IndexRoute))
+				};
+		}
+	});
+var _user$project$Update$SignUp = {ctor: 'SignUp'};
+var _user$project$Update$Logout = {ctor: 'Logout'};
+var _user$project$Update$Login = {ctor: 'Login'};
+var _user$project$Update$AddBook = {ctor: 'AddBook'};
+var _user$project$Update$OnInputSignup = function (a) {
+	return {ctor: 'OnInputSignup', _0: a};
+};
+var _user$project$Update$OnInputBook = function (a) {
+	return {ctor: 'OnInputBook', _0: a};
+};
+var _user$project$Update$OnInputLogin = function (a) {
+	return {ctor: 'OnInputLogin', _0: a};
+};
+var _user$project$Update$UpdateRoute = function (a) {
+	return {ctor: 'UpdateRoute', _0: a};
+};
+var _user$project$Update$OnLocationChange = function (a) {
+	return {ctor: 'OnLocationChange', _0: a};
+};

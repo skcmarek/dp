@@ -1,0 +1,26 @@
+var _user$project$Port$initEdge = F4(
+	function (id, from, to, label) {
+		return {id: id, from: from, to: to, label: label};
+	});
+var _user$project$Port$initNode = F2(
+	function (id, label) {
+		return {id: id, label: label};
+	});
+var _user$project$Port$addNode = _elm_lang$core$Native_Platform.outgoingPort(
+	'addNode',
+	function (v) {
+		return {id: v.id, label: v.label};
+	});
+var _user$project$Port$addEdge = _elm_lang$core$Native_Platform.outgoingPort(
+	'addEdge',
+	function (v) {
+		return {id: v.id, from: v.from, to: v.to, label: v.label};
+	});
+var _user$project$Port$Node = F2(
+	function (a, b) {
+		return {id: a, label: b};
+	});
+var _user$project$Port$Edge = F4(
+	function (a, b, c, d) {
+		return {id: a, from: b, to: c, label: d};
+	});

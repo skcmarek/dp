@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Elm Graph Editor</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <script src="elm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div>
+        <table id="table-modules" class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Module name</th>
+              <th scope="col">LOC</th>
+              <th scope="col">Ce</th>
+              <th scope="col">Ca</th>
+              <th scope="col">Instability index</th>
+            </tr>
+          </thead>
+           <tbody>
+           </tbody>
+        </table>
+        <div id="imports-init">
+        <h4>Imports</h4>
+            <table class="table-dark">
+              <thead>
+                <tr>
+                  <th scope="col">Module name</th>
+                  <th scope="col">Functions</th>
+                </tr>
+              </thead>
+               <tbody>
+               </tbody>
+            </table>
+         </div>
+
+       
+    </div>
+    <script>
+    var app = Elm.Main.fullscreen();
+    var nodes = new vis.DataSet();
+    var edges = new vis.DataSet();
+    var network;
+
+    var visSetup = function(callback) {
+        var container = document.getElementById('container');
+        var data = {
+            nodes: nodes,
+            edges: edges,
+        };
+        var options = {
+            width: '100%',
+            height: '500px',
+            edges: {
+                arrows: 'to'
+            },
+            nodes: {
+                shape: 'box',
+            },
+            layout: {
+                randomSeed: undefined,
+                improvedLayout: true,
+                hierarchical: {
+                    enabled: false,
+                    levelSeparation: 100,
+                    nodeSpacing: 500,
+                    treeSpacing: 500,
+                    blockShifting: true,
+                    edgeMinimization: true,
+                    parentCentralization: true,
+                    direction: 'UD',
+                    sortMethod: 'hubsize'
+                }
+            },
+            manipulation: {
+                enabled: true,
+                initiallyActive: false,
+                addNode: true,
+                addEdge: true,
+                editEdge: true,
+                deleteNode: true,
+                deleteEdge: true
+            },
+            physics: {
+                enabled: true,
+                barnesHut: {
+                    gravitationalConstant: -10,
+                    centralGravity: 0.3,
+                    springLength: 95,
+                    springConstant: 0.04,
+                    damping: 0.09,
+                    avoidOverlap: 0
+                },
+                forceAtlas2Based: {
+                    gravitationalConstant: -50,
+                    centralGravity: 0.01,
+                    springConstant: 0.08,
+                    springLength: 100,
+                    damping: 0.4,
+                    avoidOverlap: 0
+                },
+                repulsion: {
+                    centralGravity: 0.2,
+                    springLength: 0,
+                    springConstant: 0,
+                    nodeDistance: 100,
+                    damping: 0.09
+                },
+                hierarchicalRepulsion: {
+                    centralGravity: 0.0,
+                    springLength: 100,
+                    springConstant: 0.01,
+                    nodeDistance: 120,
+                    damping: 0.09
+                },
+                maxVelocity: 50,
+                minVelocity: 0.1,
+                solver: 'repulsion',
+                stabilization: {
+                    enabled: true,
+                    iterations: 10000,
+                    updateInterval: 100,
+                    onlyDynamicEdges: false,
+                    fit: true
+                },
+                timestep: 0.5,
+                adaptiveTimestep: true
+            }
+        }
+        var network = new vis.Network(container, data, options);
+        app.ports.addNode.subscribe(function(node) {
+            nodes.add(node);
+        });
+        app.ports.addEdge.subscribe(function(edge) {
+            edges.add(edge);
+        });
+        
+        callback();
+    }
+
+    var initGraph = function() {
+        var rows = "";
+        var imortsRowsArr = new Array();
+
+        $.getJSON('inputs/elm-spa-decomp.json', function(data) {
+            $.each(data, function(dataKey, modules) {
+                $.each(modules, function(modulesKey, module) {
+                    nodes.add([{
+                        id: modulesKey,
+                        label: module.name + "\n CE: " + module.aff_coupling + "\n CA: " + module.eff_coupling + "\n LOC: " + module.LOC
+                    }]);
+                     rows += "<tr class='clickable' data-toggle='collapse' data-target='#group-of-rows-" + modulesKey + "'><td>" + module.name + "</td><td>" + module.LOC + "</td><td>" + module.eff_coupling + "</td><td>" +  module.aff_coupling + "</td><td>" + module.eff_coupling/(module.eff_coupling + module.aff_coupling) + "</td></tr>"
+                    rows += "<tr id='group-of-rows-" + modulesKey + "' class='collapse'><td colspan=5></td></tr>";
+                    var importsRow = "";
+                    $.each(module.imports, function(importKey, imports) {
+                        importsRow += "<tr><td>" + importKey + "</td>" + "<td>" + imports + "</td></tr>";
+                        $.each(modules, function(moduleSearchkey, module) {
+                            if (module.name == importKey) {
+                                edges.add([{
+                                    from: modulesKey,
+                                    to: moduleSearchkey,
+                                    label: ""
+                                }]);
+                            }
+                        });
+                    });
+                    imortsRowsArr.push(importsRow);
+                });
+            });
+        $(rows).appendTo("#table-modules tbody" );
+
+        imortsRowsArr.forEach(function(entry, i) {
+
+        var path = "#group-of-rows-" + i + " td";
+
+        $("#imports-init" ).clone().appendTo(path);
+
+        $(path + " div:first-child").attr('id', 'imports-inited');
+        $(path + " div:first-child").css("display", "inline");
+
+        $(entry).appendTo(path + " div table tbody");
+
+        });
+        });
+    }
+
+    setTimeout(visSetup(initGraph), 1);
+    </script>
+</body>
+
+</html>

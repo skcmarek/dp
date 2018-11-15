@@ -1,0 +1,45 @@
+var _user$project$Models_Models$createBook = function (model) {
+	var book = {
+		id: _elm_lang$core$Basics$toString(
+			_elm_lang$core$List$length(model.books) + 1),
+		title: model.bookForm.title,
+		content: model.bookForm.content,
+		author: model.bookForm.author,
+		price: A2(
+			_elm_lang$core$Maybe$withDefault,
+			0,
+			_elm_lang$core$Result$toMaybe(
+				_elm_lang$core$String$toInt(model.bookForm.price)))
+	};
+	return _elm_lang$core$Native_Utils.update(
+		model,
+		{
+			books: {ctor: '::', _0: book, _1: model.books}
+		});
+};
+var _user$project$Models_Models$initBook = function (id) {
+	return {id: id, title: 'title', price: 0, author: 'author', content: 'content'};
+};
+var _user$project$Models_Models$SignupForm = F3(
+	function (a, b, c) {
+		return {email: a, password: b, passwordAgain: c};
+	});
+var _user$project$Models_Models$LoginForm = F2(
+	function (a, b) {
+		return {email: a, password: b};
+	});
+var _user$project$Models_Models$BookForm = F4(
+	function (a, b, c, d) {
+		return {title: a, author: b, price: c, content: d};
+	});
+var _user$project$Models_Models$Book = F5(
+	function (a, b, c, d, e) {
+		return {id: a, title: b, price: c, author: d, content: e};
+	});
+var _user$project$Models_Models$User = function (a) {
+	return {email: a};
+};
+var _user$project$Models_Models$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {books: a, user: b, route: c, loginForm: d, signupForm: e, bookForm: f};
+	});
